@@ -18,7 +18,7 @@ export class NotificationService {
   }
 
   public save(notification: Notification) {
-    return this.httpClient.post<Notification[]>(this.url + '/insert-notification', notification);
+    return this.httpClient.post<Notification>(this.url + '/insert-notification', notification);
   }
 
   public readNotification(notification: Notification) {

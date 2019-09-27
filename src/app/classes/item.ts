@@ -6,5 +6,5 @@ export class Item {
   itemQuantity: number;
   itemMetric: string;
   supplierId: string;
-
+  critical: boolean;
 }

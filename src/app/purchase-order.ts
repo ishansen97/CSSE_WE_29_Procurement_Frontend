@@ -13,4 +13,5 @@ export class PurchaseOrder {
   quantity: number;
   cost: number;
   supplierId: string;
+  siteId: string;
 }

@@ -13,4 +13,5 @@ export class UpdatePurchaseOrderRequest {
   quantity: Number;
   cost: Number;
   supplierId: String;
+  siteId: string;
 }

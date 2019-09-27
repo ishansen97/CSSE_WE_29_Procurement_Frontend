@@ -1,4 +1,19 @@
 <div class="container p-5 m-1">
+  <div class="row p-3">
+    <div class="col-2">
+      <h3>Filter: </h3>
+    </div>
+    
+    <div class="col-3">
+      <select name="filters" id="filters" class="form-control" [(ngModel)]="filter">
+        <option value="">-----select-----</option>
+        <option value="Approved">Approved</option>
+        <option value="Waiting for Approval">Waiting for Approval</option>
+        <option value="Pending">Pending</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+  </div>
   <div class="row text-center">
     <div class="form-group">
     </div>
@@ -7,6 +22,7 @@
         <tr>
           <th>Order ID</th>
           <th>Order Date</th>
+          <th>Site ID</th>
           <th>Supplier</th>
           <th>Status</th>
           <th></th>
@@ -17,17 +33,23 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let order of purchaseOrderResponse">
-          <td>{{order.purchaseOrder.ordId}}</td>
-          <td>{{order.purchaseOrder.ordDate}}</td>
-          <td><a href="#" data-toggle="modal" data-target="#view_supplier_modal" (click)="viewSupplier(order)">{{order.supplierDetails.supplierName}}</a></td>
-          <td>{{order.purchaseOrder.ordStatus}}</td>
-          <td *ngIf="!checkOrderStatus(order)"><button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-info" (click)="showModal(order)">Edit</button></td>
-          <td *ngIf="!checkOrderStatus(order)"><button type="button" class="btn btn-primary" (click)="approveOrder(order)" >Approve</button></td>
-          <td *ngIf="!checkOrderStatus(order)"><button type="button" class="btn btn-danger" (click)="rejectOrder(order)">Reject</button></td>
-          <td *ngIf="!checkOrderStatus(order)"><button type="button" class="btn btn-success" (click)="sendForApproval(order)" >Send</button></td>
-          <td *ngIf="order.purchaseOrder.cost > 100000" style="color: red">Approval Required</td>
+        <tr *ngFor="let order of purchaseOrderResponse" [ngSwitch]="filter === ''" >
+          <td *ngIf="checkFilter(order.purchaseOrder.ordStatus)">{{order.purchaseOrder.ordId}}</td>
+          <td *ngIf="checkFilter(order.purchaseOrder.ordStatus)">{{order.purchaseOrder.ordDate}}</td>
+          <td *ngIf="checkFilter(order.purchaseOrder.ordStatus)"><button type="button" class="btn btn-link" (click)="viewSite(order.purchaseOrder.siteId)">{{order.purchaseOrder.siteId}}</button></td>
+          <td *ngIf="checkFilter(order.purchaseOrder.ordStatus)"><a href="#" data-toggle="modal" data-target="#view_supplier_modal" (click)="viewSupplier(order)">{{order.supplierDetails.supplierName}}</a></td>
+          <td *ngIf="checkFilter(order.purchaseOrder.ordStatus)">{{order.purchaseOrder.ordStatus}}</td>
+          <td *ngIf="!checkOrderStatus(order) && checkFilter(order.purchaseOrder.ordStatus) && checkBudget(order)"><button type="button" data-toggle="modal" data-backdrop="static" data-target="#editModal" class="btn btn-info" (click)="showModal(order)">Edit</button></td>
+          <td *ngIf="!checkOrderStatus(order) && checkBudget(order) && checkFilter(order.purchaseOrder.ordStatus)"><button type="button" class="btn btn-primary" (click)="approveOrder(order)" >Approve</button></td>
+          <td *ngIf="!checkOrderStatus(order) && checkBudget(order) && checkFilter(order.purchaseOrder.ordStatus)"><button type="button" class="btn btn-danger" (click)="rejectOrder(order)">Reject</button></td>
+          <td *ngIf="!checkOrderStatus(order) && !checkBudget(order) && checkFilter(order.purchaseOrder.ordStatus)"><button type="button" class="btn btn-success" (click)="sendForApproval(order)" >Send</button></td>
+          <td *ngIf="!checkBudget(order) && checkFilter(order.purchaseOrder.ordStatus)" style="color: red">Approval Required</td>
         </tr>
+        <!--<tr *ngIf="shownCount === 0">-->
+          <!--<td colspan="5">-->
+            <!--<div class="alert alert-info">No Records for this status!!!!</div>-->
+          <!--</td>-->
+        <!--</tr>-->
       </tbody>
     </table>
   </div>
@@ -52,9 +74,10 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="suppliers" class="col-4 h3">Supplier</label>
-          <select name="suppliers" id="suppliers" class="form-control" [(ngModel)]="selectedSupplier">
+          <select name="suppliers" id="suppliers" class="form-control" [(ngModel)]="selectedSupplier" (change)="supplierChange()">
             <option value="{{supplier.supplierId}}" *ngFor="let supplier of supplierResponse">{{supplier.supplierName}}</option>
           </select>
+          <div *ngIf="!isValidSupplier" class="alert alert-danger">Invalid supplier for the given items</div>
         </div>
 
         <div class="form-group">
@@ -72,7 +95,10 @@
 
 
         <div class="form-group">
-          <button class="btn btn-success" (click)="editOrder()"><i class="fa fa-floppy-o p-2" ></i>Update</button>
+          <button class="btn btn-success" [disabled]="!isValidSupplier" (click)="editOrder()"><i class="fa fa-floppy-o p-2" ></i>Update</button>
+        </div>
+        <div class="form-group" *ngIf="isUpdated">
+          <div class="alert alert-info">Successfully Updated</div>
         </div>
 
       </div>
@@ -108,6 +134,25 @@
           <input type="text" class="form-control" id="supplier_location" [(ngModel)]="viewSupplierDetails.supplierLocation" readonly>
         </div>
 
+        <div class="form-group">
+          <legend>Available Items</legend>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Item Id</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of viewSupplierDetails.itemList">
+                <td>{{item.itemId}}</td>
+                <td>{{item.itemType}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
     </div>
   </div>
@@ -134,7 +179,7 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="supplier_ID">Order ID</label>
-          <input type="text" class="form-control" id="order_ID" [(ngModel)]="sendOrderDetails.ordId">
+          <input type="text" class="form-control" id="order_ID" [(ngModel)]="sendNotification.purchaseOrder.ordId">
         </div>
 
         <div class="form-group">
@@ -143,9 +188,50 @@
         </div>
 
         <div class="form-group">
-          <button type="button" class="btn btn-outline-success">Send</button>
+          <button type="button" class="btn btn-outline-success" (click)="sendNotificationForManager()">Send</button>
         </div>
 
+        <div class="form-group" *ngIf="isNotificationSent">
+          <div class="alert alert-success">Successfully sent</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="view_site_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="col-8">
+          <h2>View Site Details</h2>
+        </div>
+
+        <div class="col-4">
+          <button class="close" data-dismiss="modal" (click)="clearChangedItems()">&times;</button>
+        </div>
+
+
+
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="site_ID">Site ID</label>
+          <input type="text" class="form-control" id="site_ID" [(ngModel)]="selectedSite.siteId"  readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="site_name">Site Name</label>
+          <input type="text" class="form-control" id="site_name" [(ngModel)]="selectedSite.siteName"  readonly>
+        </div>
+
+        <div class="form-group">
+          <label for="site_budget">Site Budget</label>
+          <input type="text" class="form-control" id="site_budget" [(ngModel)]="selectedSite.budget"  readonly>
+        </div>
       </div>
     </div>
   </div>

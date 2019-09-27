@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {NotificationService} from '../../services/notification.service';
 import {Notification} from '../../classes/notification';
+import {PurchaseOrder} from '../../purchase-order';
+import {Item} from '../../classes/item';
+import {Supplier} from '../../classes/supplier';
+import {Router} from '@angular/router';
 
 declare var $: any;
 
@@ -13,37 +17,57 @@ export class NotificationsComponent implements OnInit {
   notifications: Notification[];
   selectedNotification: Notification;
   newNotificationCount: Number;
+  username: string;
+  userType: string;
+  publishedDate: string;
 
-  constructor(private notificationService: NotificationService) {
+  constructor(private notificationService: NotificationService, private router: Router) {
     this.selectedNotification = <Notification>{};
     this.newNotificationCount = 0;
   }
 
   ngOnInit() {
     this.getAllNotifications();
+    this.username = sessionStorage.getItem('username');
+    this.userType = sessionStorage.getItem('userType');
+    this.selectedNotification.purchaseOrder = <PurchaseOrder>{};
+    this.selectedNotification.items = [];
+    this.selectedNotification.supplier = <Supplier>{};
+
+    if (this.username === null) {
+      this.router.navigate(['login']);
+    }
+
   }
 
   getAllNotifications() {
     this.notificationService.findAll().subscribe(notification => {
       this.notifications = notification;
       this.notifications.forEach(notification => {
-        if (!notification.read) {
+        let parts = [];
+        let ordDateParts = [];
+        if (!notification.read && (notification.receiverType === this.userType)) {
           this.newNotificationCount = Number(this.newNotificationCount) + 1;
         }
+
+        let date = notification.publishedDate.toString();
+        parts = date.split("T");
+        this.publishedDate = parts[0] + " " + parts[1].split(".")[0];
+
+        let ordDate = notification.purchaseOrder.ordDate.toString();
+        ordDateParts = ordDate.split('T');
+        notification.purchaseOrder.ordDate = ordDateParts[0];
       });
     });
+
   }
 
   showModal(notification: Notification) {
-    $('#showNotification').modal('show');
+    $('#showNotification').modal({backdrop: 'static', keyboard: false, show: true});
     this.selectedNotification = notification;
   }
 
   readNotification() {
-    console.log('_id: ' + this.selectedNotification._id);
-    console.log('not_id: ' + this.selectedNotification.notificationId);
-    console.log('message: ' + this.selectedNotification.message);
-    console.log('read: ' + this.selectedNotification.read);
 
     this.selectedNotification.read = true;
 
@@ -55,6 +79,15 @@ export class NotificationsComponent implements OnInit {
         document.location.reload();
       }
     });
+  }
+
+  validNotification(notification: Notification): boolean {
+    return (!notification.read && (notification.receiverType === this.userType));
+  }
+
+  viewOrderDetails() {
+    $("#viewOrderDetails").modal({backdrop: 'static', keyboard: false, show: true});
+
   }
 
 }

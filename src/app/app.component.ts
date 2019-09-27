@@ -21,6 +21,7 @@ export class AppComponent implements OnInit{
   isPassword: boolean;
   isLoggedIn: boolean;
   username: string;
+  userType: string;
 
   constructor(private notificationService: NotificationService, public loginService: LoginCredentialsService, public router: Router) {
     this.newNotificationCount = 0;
@@ -35,6 +36,7 @@ export class AppComponent implements OnInit{
     this.getAllNotifications();
     this.loginCredentials = <LoginCredentials>{};
     this.username = sessionStorage.getItem('username');
+    this.userType = sessionStorage.getItem('userType');
     this.isLoggedIn = this.username !== null;
 
   }
@@ -43,7 +45,7 @@ export class AppComponent implements OnInit{
     this.notificationService.findAll().subscribe(notification => {
       this.notifications = notification;
       this.notifications.forEach(notification => {
-        if (!notification.read) {
+        if (!notification.read && (notification.receiverType === this.userType)) {
           this.newNotificationCount = Number(this.newNotificationCount) + 1;
         }
       });
