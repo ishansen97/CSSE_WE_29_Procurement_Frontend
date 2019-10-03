@@ -10,6 +10,7 @@ export class Notification {
   items: Array<Item>;
   supplier: Supplier;
   read: boolean;
+  sender: string;
   receiverType: string;
   publishedDate: Date;
   readDate: Date;

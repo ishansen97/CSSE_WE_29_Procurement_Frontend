@@ -10,6 +10,7 @@ import { MainComponent } from './main/main.component';
 import { ViewOrdersComponent } from './view-orders/view-orders.component';
 import { NotificationsComponent } from './notifications/notifications/notifications.component';
 import { LoginCredentialsComponent } from './login-credentials/login-credentials.component';
+import {Constants} from './classes/constants';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { LoginCredentialsComponent } from './login-credentials/login-credentials
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    Constants
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -315,6 +315,7 @@ export class ViewOrdersComponent implements OnInit {
   }
 
   sendNotificationForManager() {
+    this.sendNotification.sender = "Procurement";
     this.sendNotification.message = $('#description').val();
     this.sendNotification.purchaseOrder.ordStatus = 'Waiting for Approval';
     this.sendNotification.publishedDate = new Date();
@@ -351,6 +352,8 @@ export class ViewOrdersComponent implements OnInit {
     else if (status === 'Rejected') {
       message = 'Purchase Order ' + this.sendNotification.purchaseOrder.ordId + ' has been Rejected by the Procurement staff';
     }
+
+    this.sendNotification.sender = "Procurement";
     this.sendNotification.message = message;
     this.sendNotification.purchaseOrder.ordStatus = status;
     this.sendNotification.publishedDate = new Date();
