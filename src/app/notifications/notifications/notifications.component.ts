@@ -3,6 +3,9 @@ import {NotificationService} from '../../services/notification.service';
 import {Notification} from '../../classes/notification';
 import {PurchaseOrder} from '../../purchase-order';
 
+import {Supplier} from '../../classes/supplier';
+import {Item} from '../../classes/item';
+
 declare var $: any;
 
 @Component({
@@ -17,6 +20,19 @@ export class NotificationsComponent implements OnInit {
   username: string;
   userType: string;
   publishedDate: string;
+
+  id: string;
+  notificationId: number;
+  message: string;
+  purchaseOrder: PurchaseOrder;
+  items: Array<Item>;
+  supplier: Supplier;
+  read: boolean;
+  receiverType: string;
+  // publishedDate: Date;
+  readDate: Date;
+
+
 
   constructor(private notificationService: NotificationService) {
     this.selectedNotification = <Notification>{};

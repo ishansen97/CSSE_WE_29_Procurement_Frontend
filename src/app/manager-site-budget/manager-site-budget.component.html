@@ -1,0 +1,26 @@
+
+
+<div class="p-3">
+
+  <table class="table table-bordered">
+    <tr>
+
+      <th>Site Name</th>
+      <th>Allocated Budget ($)</th>
+    </tr>
+    <tr>
+      <td>
+        <select name="site" id="site" class="form-control" [(ngModel)]="assignBudget.siteId" (change)="checkAvailability(assignBudget.siteId)">
+          <option value="">----select site----</option>
+          <option *ngFor="let site of sites" value="{{site.siteId}}">{{site.siteName}}</option>
+        </select>
+      </td>
+      <td><input type="number" name="budget" [(ngModel)]="budget"></td>
+      <td>
+        <button class="btn btn-outline-success" (click)="createBudget()">Assign</button>
+      </td>
+    </tr>
+  </table>
+
+
+</div>

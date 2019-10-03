@@ -2,22 +2,23 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Item} from '../classes/item';
+import {Constants} from '../classes/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemService {
-  private url: String;
+  private url: string;
 
-  constructor(private httpClient: HttpClient) {
-    this.url = 'http://localhost:9200/api/item';
+  constructor(private httpClient: HttpClient, private constants: Constants) {
+    this.url = constants.URL;
   }
 
   public findAll(): Observable<Item[]> {
-    return this.httpClient.get<Item[]>(this.url + '/get-all-items');
+    return this.httpClient.get<Item[]>(this.url + 'get-all-items');
   }
 
   public save(item: Item) {
-    return this.httpClient.post<Item[]>(this.url + '/insert-item', item);
+    return this.httpClient.post<Item[]>(this.url + 'insert-item', item);
   }
 }

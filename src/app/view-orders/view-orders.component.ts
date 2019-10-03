@@ -271,7 +271,7 @@ export class ViewOrdersComponent implements OnInit {
           }
         }, fail => {
           alert('purchase order: ' + fail);
-        })
+        });
       }
     }, error => {
       alert('notification error: ' + error);

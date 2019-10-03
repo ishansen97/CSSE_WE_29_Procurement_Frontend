@@ -13,7 +13,7 @@ import {Router} from '@angular/router';
 export class AppComponent implements OnInit{
   title = 'csse-we29-frontend';
   notifications: Array<Notification>;
-  newNotificationCount: Number;
+  newNotificationCount: number;
   loginCredentials: LoginCredentials;
   password: string;
   isUserType: boolean;

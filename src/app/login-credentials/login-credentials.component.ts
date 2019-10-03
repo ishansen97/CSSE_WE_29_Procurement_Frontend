@@ -33,12 +33,27 @@ export class LoginCredentialsComponent implements OnInit {
     this.isUserType = this.loginCredentials.userType !== undefined;
     this.isUsername = this.loginCredentials.username !== undefined;
     this.isPassword = this.password !== undefined;
+    var userType = null;
+    var address = null;
 
     if (this.isUserType && this.isUsername && this.isPassword) {
-      this.loginCredentials.password = "Basic=" + window.btoa(this.password);
+      this.loginCredentials.password = 'Basic=' + window.btoa(this.password);
       this.loginService.verifyUser(this.loginCredentials).subscribe(data => {
           this.setSessionStorage();
-          this.router.navigate(['view-orders']).then(() => {
+          userType = sessionStorage.getItem('userType');
+          if (userType === 'Procurement') {
+            address = 'view-orders';
+          }
+          else if (userType === 'Manager') {
+            address = 'manage-budget';
+          }
+          else if (userType === 'Supervisor') {
+            address = 'view-supervisor';
+          }
+          else if (userType === 'SiteMansger') {
+            address = 'view-site';
+          }
+          this.router.navigate([address]).then(() => {
             document.location.reload();
           });
 
